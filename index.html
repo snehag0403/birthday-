@@ -1,3 +1,6 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B0A1D">
 <title>Marigold &amp; Moonlight</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,13 +19,17 @@
     --display:"Marcellus", Georgia, serif;
     --body:"Karla", "Helvetica Neue", Arial, sans-serif;
     --hand:"Kalam", cursive;
+    --k:1;                 /* artwork scale — bumped up on phones */
   }
 
   *{box-sizing:border-box;}
 
+  html{height:100%;}
+
   body{
     margin:0;
     min-height:100vh;
+    min-height:100dvh;
     background:
       radial-gradient(120% 80% at 50% -10%, #2A1C4A 0%, transparent 55%),
       radial-gradient(90% 60% at 50% 110%, #3A1230 0%, transparent 60%),
@@ -32,28 +39,55 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    padding:24px 16px;
+    padding:0;
+    overflow:hidden;
+    overscroll-behavior:none;
     -webkit-tap-highlight-color:transparent;
   }
 
   /* ================= stage ================= */
+  /* phone-first: the card IS the screen — no letterbox, no tiny box */
   .stage{
     position:relative;
     width:100%;
-    max-width:420px;
-    height:min(760px, calc(100vh - 48px));
+    height:100vh;
+    height:100dvh;
     overflow:hidden;
-    border-radius:8px;
+    border-radius:0;
     cursor:pointer;
     background:
       radial-gradient(85% 55% at 50% 8%, rgba(239,169,52,.15) 0%, transparent 60%),
       radial-gradient(70% 45% at 50% 100%, rgba(122,30,69,.55) 0%, transparent 65%),
       linear-gradient(176deg, #1A1540 0%, var(--night) 45%, #17102C 100%);
-    box-shadow:
-      0 0 0 1px rgba(239,169,52,.28),
-      0 1px 0 rgba(248,223,164,.14) inset,
-      0 40px 90px -30px rgba(0,0,0,.9);
+    box-shadow:none;
   }
+
+  /* desktop / big screens: keep the framed greeting-card look */
+  @media (min-width:560px) and (min-height:700px){
+    body{padding:24px 16px;}
+    .stage{
+      max-width:420px;
+      height:min(760px, calc(100dvh - 48px));
+      border-radius:8px;
+      box-shadow:
+        0 0 0 1px rgba(239,169,52,.28),
+        0 1px 0 rgba(248,223,164,.14) inset,
+        0 40px 90px -30px rgba(0,0,0,.9);
+    }
+  }
+
+  /* artwork gets bigger as the phone gets taller */
+  @media (max-width:559px) and (min-height:640px){ :root{--k:1.12} }
+  @media (max-width:559px) and (min-height:730px){ :root{--k:1.22} }
+  @media (max-width:559px) and (min-height:810px){ :root{--k:1.32} }
+
+  /* scaler: keeps the pixel-perfect art, just blows it up */
+  .art{position:relative;display:grid;place-items:center;}
+  .art > *{transform:scale(var(--k));}
+  .art-env {width:calc(230px*var(--k));height:calc(152px*var(--k));}
+  .art-cake{width:calc(216px*var(--k));height:calc(196px*var(--k));}
+  .art-bq  {width:calc(250px*var(--k));height:calc(250px*var(--k));}
+  .art-gift{width:calc(210px*var(--k));height:calc(210px*var(--k));}
 
   #petals{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1;}
 
@@ -63,7 +97,8 @@
 
   /* ================= progress bars ================= */
   .bars{
-    position:absolute;top:20px;left:50%;transform:translateX(-50%);
+    position:absolute;top:calc(20px + env(safe-area-inset-top));
+    left:50%;transform:translateX(-50%);
     z-index:6;display:flex;gap:5px;width:calc(100% - 76px);
   }
   .bar{flex:1;height:2px;background:rgba(248,223,164,.2);border-radius:2px;overflow:hidden;}
@@ -80,7 +115,7 @@
     position:absolute;inset:0;z-index:3;
     display:flex;flex-direction:column;align-items:center;justify-content:center;
     text-align:center;gap:16px;
-    padding:64px 34px 44px;
+    padding:calc(64px + env(safe-area-inset-top)) 30px calc(44px + env(safe-area-inset-bottom));
     opacity:0;pointer-events:none;
     transform:scale(.98);
     transition:opacity .8s ease, transform .8s ease;
@@ -121,7 +156,7 @@
     52%{transform:scale(1.22)}70%{transform:scale(1)}}
 
   .cue{
-    position:absolute;bottom:34px;left:0;right:0;
+    position:absolute;bottom:calc(34px + env(safe-area-inset-bottom));left:0;right:0;
     font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;
     color:rgba(248,223,164,.5);
     animation:pulse 2.4s ease-in-out infinite;
@@ -280,7 +315,7 @@
     border-radius:0 6px 6px 0;
     transition:transform 1s cubic-bezier(.3,.8,.3,1);
   }
-  .cut .slice{transform:translate(46px,16px) rotate(13deg);}
+  .cut .slice{transform:translate(32px,14px) rotate(11deg);}
 
   .knife{
     position:absolute;left:calc(50% + 30px);bottom:210px;
@@ -324,12 +359,105 @@
   .replay:hover{background:rgba(239,169,52,.14);border-color:var(--gold);}
   .replay:focus-visible{outline:2px solid var(--gold);outline-offset:3px;}
 
+  /* ============ scene 5 : gift + teddy ============ */
+  .gift{position:relative;width:210px;height:210px;}
+
+  .gglow{
+    position:absolute;left:50%;bottom:60px;width:230px;height:230px;
+    transform:translate(-50%,0) scale(.3);border-radius:50%;
+    background:radial-gradient(circle,rgba(248,223,164,.55),rgba(232,84,124,.18) 45%,transparent 68%);
+    opacity:0;z-index:1;pointer-events:none;
+  }
+  .opened .gglow{animation:gpop 1.3s ease-out .3s forwards;}
+  @keyframes gpop{
+    0%{opacity:0;transform:translate(-50%,0) scale(.3)}
+    35%{opacity:1}
+    100%{opacity:0;transform:translate(-50%,-26px) scale(1.35)}
+  }
+
+  .teddy{
+    position:absolute;left:50%;bottom:64px;width:128px;z-index:2;
+    transform:translate(-50%,46px) scale(.4);transform-origin:50% 100%;
+    opacity:0;
+    transition:transform 1.2s cubic-bezier(.2,.9,.3,1) .35s, opacity .5s ease .35s;
+  }
+  .opened .teddy{opacity:1;transform:translate(-50%,-26px) scale(1);}
+  .teddy svg{width:100%;height:auto;display:block;transform-origin:50% 92%;}
+  .opened .teddy svg{animation:wiggle 3.2s ease-in-out 1.6s infinite;}
+  @keyframes wiggle{0%,100%{transform:rotate(-3.5deg)}50%{transform:rotate(3.5deg)}}
+
+  .gbox{
+    position:absolute;left:50%;bottom:6px;transform:translateX(-50%);
+    width:152px;height:104px;border-radius:6px;z-index:3;overflow:hidden;
+    background:linear-gradient(180deg,#9E2E50,#5E1637);
+    box-shadow:0 0 0 1px rgba(239,169,52,.45), 0 26px 50px -18px rgba(0,0,0,.85);
+  }
+  .gbox::after{
+    content:"";position:absolute;inset:8px;border-radius:3px;
+    border:1px solid rgba(248,223,164,.16);
+  }
+  .glid{
+    position:absolute;left:50%;bottom:104px;transform:translateX(-50%);
+    width:172px;height:34px;border-radius:5px;z-index:4;
+    background:linear-gradient(180deg,#B3395F,#7A1E45);
+    box-shadow:0 0 0 1px rgba(239,169,52,.45), 0 1px 0 rgba(248,223,164,.2) inset;
+    transition:transform 1s cubic-bezier(.4,-.25,.4,1.35), opacity .8s ease .3s;
+  }
+  .opened .glid{transform:translate(-50%,-128px) rotate(-27deg);opacity:0;}
+
+  .gband{
+    position:absolute;left:50%;top:0;bottom:0;width:26px;transform:translateX(-50%);
+    background:linear-gradient(90deg,rgba(239,169,52,.5),var(--gold-pale) 50%,rgba(239,169,52,.5));
+    opacity:.85;
+  }
+  .bow{position:absolute;left:50%;top:-21px;width:78px;height:28px;transform:translateX(-50%);}
+  .bow i{
+    position:absolute;top:3px;width:34px;height:21px;
+    border-radius:70% 30% 55% 45% / 65% 65% 35% 35%;
+    background:linear-gradient(160deg,#FFF3D6,var(--gold-pale) 40%,var(--gold) 90%);
+    box-shadow:0 2px 6px -2px rgba(0,0,0,.5);
+  }
+  .bow i:first-of-type{left:0;transform:rotate(-16deg);}
+  .bow i:last-of-type{right:0;transform:rotate(16deg) scaleX(-1);}
+  .bow b{
+    position:absolute;left:50%;top:6px;width:16px;height:16px;border-radius:50%;
+    transform:translateX(-50%);
+    background:radial-gradient(circle at 35% 30%,#FFF3D6,var(--gold) 55%,#B9761D);
+    box-shadow:0 1px 3px rgba(0,0,0,.4);
+  }
+
+  /* everything that only shows up once the gift is open */
+  #s4 .post{opacity:0;transform:translateY(12px);pointer-events:none;}
+  #s4.opened .post{
+    pointer-events:auto;
+    animation:rise .85s cubic-bezier(.2,.7,.3,1) .8s forwards;
+  }
+  #s4.opened .replay.post{animation-delay:1s;}
+  #s4 .cue{transition:opacity .4s ease;}
+  #s4.opened .cue{opacity:0;animation:none;}
+
+  /* ================= phone typography ================= */
+  @media (max-width:559px){
+    .greeting{font-size:clamp(1.75rem,8.6vw,2.5rem);}
+    .name{font-size:clamp(2.2rem,11vw,3.1rem);}
+    .msg{font-size:1rem;line-height:1.78;max-width:31ch;}
+    .eyebrow{font-size:.7rem;}
+    .cue{font-size:.66rem;}
+    .sig{font-size:1.2rem;}
+    .gest{font-size:1.4rem;gap:16px;}
+    .replay{font-size:.66rem;padding:13px 24px;}
+    .scene{gap:18px;}
+  }
+
   @media (prefers-reduced-motion:reduce){
     .scene.on .rise,.scene.on .bloom,.scene.on .fade,.scene.on .stem{animation:none;opacity:1;transform:none;stroke-dashoffset:0;}
     .blown .smoke{animation:none}
     .fl{animation:none}
     .cue{animation:none;opacity:.8}
     .bar.run i{animation:none;width:100%}
+    .opened .teddy svg{animation:none}
+    .opened .gglow{animation:none;opacity:0}
+    #s4.opened .post{animation:none;opacity:1;transform:none}
   }
 </style>
 
@@ -339,6 +467,7 @@
   <div class="bars" id="bars" aria-hidden="true">
     <div class="bar"><i></i></div><div class="bar"><i></i></div>
     <div class="bar"><i></i></div><div class="bar"><i></i></div>
+    <div class="bar"><i></i></div>
   </div>
 
   <div class="frame" aria-hidden="true">
@@ -361,7 +490,8 @@
   <!-- ---------- 1 : envelope ---------- -->
   <section class="scene on" id="s0">
     <p class="eyebrow rise d1">A letter for you</p>
-    <div class="env rise d2" id="env">
+    <div class="art art-env rise d2">
+    <div class="env" id="env">
       <div class="env-body">
         <span class="env-line">Happy Birthday <b>&#9829;</b></span>
       </div>
@@ -371,6 +501,7 @@
       </figure>
       <div class="env-flap"></div>
       <div class="seal">&#9829;</div>
+    </div>
     </div>
     <p class="cue">Tap to open</p>
   </section>
@@ -399,7 +530,8 @@
   <!-- ---------- 3 : cake ---------- -->
   <section class="scene" id="s2">
     <p class="eyebrow rise d1">Make a wish</p>
-    <div class="cake rise d2" id="cake">
+    <div class="art art-cake rise d2">
+    <div class="cake" id="cake">
       <span class="candle c1"><span class="fl"></span><span class="smoke"></span><span class="smoke s2"></span><span class="smoke s3"></span></span>
       <span class="candle c2"><span class="fl"></span><span class="smoke"></span><span class="smoke s2"></span><span class="smoke s3"></span></span>
       <span class="candle c3"><span class="fl"></span><span class="smoke"></span><span class="smoke s2"></span><span class="smoke s3"></span></span>
@@ -409,12 +541,13 @@
       <span class="tier top"></span>
       <span class="knife"></span>
     </div>
+    </div>
     <h2 class="greeting rise d4" id="cakeLine">Blow them out —<br>every wish counts</h2>
   </section>
 
   <!-- ---------- 4 : bouquet ---------- -->
   <section class="scene" id="s3">
-    <div class="bq" id="bq"></div>
+    <div class="art art-bq"><div class="bq" id="bq"></div></div>
     <h2 class="greeting rise d5">Ek guldasta,<br>aur dher saara pyaar</h2>
     <p class="msg rise d6">
       Aaj se ye din sirf aapka nahi, poore ghar ka tyohaar hai.
@@ -424,7 +557,76 @@
       <span>&#129303;</span><span>&#128155;</span><span>&#127801;</span>
       <span>&#128149;</span><span>&#127882;</span>
     </p>
-    <button class="replay rise d6" id="replay">Play again</button>
+  </section>
+
+  <!-- ---------- 5 : gift + teddy ---------- -->
+  <section class="scene" id="s4">
+    <p class="eyebrow rise d1">Ek aur cheez</p>
+
+    <div class="art art-gift rise d2">
+      <div class="gift" id="gift">
+        <span class="gglow" aria-hidden="true"></span>
+
+        <div class="teddy" aria-hidden="true">
+          <svg viewBox="0 0 140 152" fill="none">
+            <!-- legs -->
+            <ellipse cx="46" cy="139" rx="16" ry="11.5" fill="#A96F42"/>
+            <ellipse cx="94" cy="139" rx="16" ry="11.5" fill="#A96F42"/>
+            <ellipse cx="46" cy="140" rx="8.5" ry="6" fill="#EBCBA6"/>
+            <ellipse cx="94" cy="140" rx="8.5" ry="6" fill="#EBCBA6"/>
+            <!-- arms -->
+            <ellipse cx="27" cy="107" rx="12" ry="18" fill="#A96F42" transform="rotate(22 27 107)"/>
+            <ellipse cx="113" cy="107" rx="12" ry="18" fill="#A96F42" transform="rotate(-22 113 107)"/>
+            <!-- body -->
+            <ellipse cx="70" cy="110" rx="36" ry="33" fill="#C68B57"/>
+            <ellipse cx="70" cy="115" rx="23" ry="24" fill="#EBCBA6"/>
+            <path d="M0 6.5 C-9.5 -2 -8.5 -11.5 -2.6 -11.5 C-0.8 -11.5 0 -10.4 0 -9
+                     C0 -10.4 0.8 -11.5 2.6 -11.5 C8.5 -11.5 9.5 -2 0 6.5 Z"
+                  transform="translate(70 113)" fill="#E8547C"/>
+            <!-- ears -->
+            <circle cx="34" cy="31" r="17" fill="#A96F42"/>
+            <circle cx="106" cy="31" r="17" fill="#A96F42"/>
+            <circle cx="34" cy="31" r="9" fill="#E5B183"/>
+            <circle cx="106" cy="31" r="9" fill="#E5B183"/>
+            <!-- head -->
+            <ellipse cx="70" cy="50" rx="40" ry="35" fill="#C68B57"/>
+            <ellipse cx="70" cy="64" rx="21" ry="15" fill="#EBCBA6"/>
+            <ellipse cx="38" cy="61" rx="8" ry="5" fill="#E8859B" fill-opacity=".45"/>
+            <ellipse cx="102" cy="61" rx="8" ry="5" fill="#E8859B" fill-opacity=".45"/>
+            <ellipse cx="70" cy="56" rx="7" ry="5.2" fill="#4A2C18"/>
+            <path d="M70 61.5 q0 6.5 -8 6.5 M70 61.5 q0 6.5 8 6.5"
+                  stroke="#4A2C18" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="52" cy="43" r="5" fill="#3A2416"/>
+            <circle cx="88" cy="43" r="5" fill="#3A2416"/>
+            <circle cx="53.7" cy="41.3" r="1.8" fill="#FFF7EC" fill-opacity=".9"/>
+            <circle cx="89.7" cy="41.3" r="1.8" fill="#FFF7EC" fill-opacity=".9"/>
+            <!-- little gold bow at the neck -->
+            <ellipse cx="59" cy="84" rx="9" ry="6.5" fill="#EFA934" transform="rotate(-18 59 84)"/>
+            <ellipse cx="81" cy="84" rx="9" ry="6.5" fill="#EFA934" transform="rotate(18 81 84)"/>
+            <circle cx="70" cy="84" r="4.6" fill="#F8DFA4"/>
+          </svg>
+        </div>
+
+        <div class="gbox" aria-hidden="true"><span class="gband"></span></div>
+        <div class="glid" aria-hidden="true">
+          <span class="gband"></span>
+          <span class="bow"><i></i><i></i><b></b></span>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="greeting rise d4" id="giftLine">Ise kholiye</h2>
+    <p class="msg rise d5" id="giftMsg">
+      Phoolon ke saath ek chhota sa gift bhi hai&nbsp;&mdash;
+      <em>khol kar dekhiye.</em>
+    </p>
+
+    <p class="gest post" aria-label="love and hugs">
+      <span>&#128149;</span><span>&#129303;</span><span>&#128155;</span>
+      <span>&#128571;</span><span>&#128150;</span>
+    </p>
+    <button class="replay post" id="replay">Play again</button>
+    <p class="cue">Tap to open the gift</p>
   </section>
 </main>
 
@@ -620,12 +822,14 @@
 
   /* ============ scene director ============ */
   var scenes = [document.getElementById('s0'),document.getElementById('s1'),
-                document.getElementById('s2'),document.getElementById('s3')];
+                document.getElementById('s2'),document.getElementById('s3'),
+                document.getElementById('s4')];
   var bars = Array.prototype.slice.call(document.querySelectorAll('.bar'));
-  var DUR  = [0, 16000, 12000, 0];  // 0 = waits for a tap / end of reel
+  var DUR  = [0, 16000, 12000, 13000, 0];  // 0 = waits for a tap / end of reel
   var cake = document.getElementById('cake');
   var env  = document.getElementById('env');
-  var cur  = 0, timer = null, cutTimer = null, busy = false;
+  var gift = document.getElementById('gift');
+  var cur  = 0, timer = null, cutTimer = null, giftTimer = null, busy = false;
 
   function runBar(i){
     bars.forEach(function(b,n){
@@ -644,7 +848,7 @@
   }
 
   function show(i){
-    clearTimeout(timer); clearTimeout(cutTimer);
+    clearTimeout(timer); clearTimeout(cutTimer); clearTimeout(giftTimer);
     scenes[cur].classList.remove('on');
     cur = i;
     scenes[cur].classList.add('on');
@@ -655,14 +859,41 @@
       setLine('Blow them out —<br>every wish counts');
       cutTimer = setTimeout(blowCandles, 2600);
     }
-    if (i === 3){                       // bouquet: final scene
+    if (i === 3){                       // bouquet
       burst(40); hearts(30);
-      bars[3].classList.add('done');
+    }
+    if (i === 4){                       // gift: final scene
+      resetGift();
+      bars[4].classList.add('done');
+      giftTimer = setTimeout(openGift, 4200);   // khud bhi khul jaata hai
     }
     if (DUR[i]) timer = setTimeout(next, DUR[i]);
   }
 
   function setLine(html){ document.getElementById('cakeLine').innerHTML = html; }
+
+  /* ============ gift + teddy ============ */
+  function resetGift(){
+    clearTimeout(giftTimer);
+    gift.classList.remove('opened');
+    scenes[4].classList.remove('opened');
+    document.getElementById('giftLine').innerHTML = 'Ise kholiye';
+    document.getElementById('giftMsg').innerHTML =
+      'Phoolon ke saath ek chhota sa gift bhi hai&nbsp;&mdash; <em>khol kar dekhiye.</em>';
+  }
+
+  function openGift(){
+    if (gift.classList.contains('opened')) return;
+    clearTimeout(giftTimer);
+    gift.classList.add('opened');
+    scenes[4].classList.add('opened');
+    hearts(46); burst(24);
+    setTimeout(function(){ hearts(26); }, 900);
+    document.getElementById('giftLine').innerHTML = 'Dher saara pyaar,<br>aur ek teddy';
+    document.getElementById('giftMsg').innerHTML =
+      'Ye teddy meri taraf se&nbsp;&mdash; jab bhi thak jao, isse gale laga lena. ' +
+      '<em>Bhut saara pyaar, hamesha.</em>';
+  }
 
   function blowCandles(){
     if (cake.classList.contains('blown')) return;
@@ -702,6 +933,7 @@
     }
     if (cur === 2 && !cake.classList.contains('blown')){ blowCandles(); return; }
     if (cur === 2 && !cake.classList.contains('cut')){ cutCake(); return; }
+    if (cur === 4){ openGift(); return; }
     next();
   }
 
@@ -718,6 +950,7 @@
     env.classList.remove('opened');
     scenes[0].classList.remove('revealing');
     cake.classList.remove('cut','swing','blown');
+    resetGift();
     setLine('Blow them out —<br>every wish counts');
     show(0);
   });
