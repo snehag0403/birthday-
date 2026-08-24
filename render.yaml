@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: birthday-page
+    runtime: static
+    buildCommand: echo "no build step needed"
+    staticPublishPath: .
